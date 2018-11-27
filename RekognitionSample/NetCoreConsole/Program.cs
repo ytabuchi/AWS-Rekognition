@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RekognitionSample.Core;
+using System;
 
 namespace NetCoreConsole
 {
@@ -7,6 +8,11 @@ namespace NetCoreConsole
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+
+            var rekognition = new RekognitionService();
+            rekognition.GetFacesAsync(@"D:\family.jpg").Wait();
+
+            Console.ReadLine();
         }
     }
 }
