@@ -3,6 +3,7 @@ using Amazon.Rekognition;
 using Amazon.Rekognition.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -10,9 +11,9 @@ namespace RekognitionSample.Core
 {
     public class RekognitionService
     {
-        public async Task GetFacesAsync(string filePath)
+        public async Task<List<DetectedFaceDetail>> GetFacesDetailsFromLocalFileAsync(string filePath)
         {
-            var imageBytes = await EncodeAsync(filePath);
+            var imageBytes = await GenerateImageBytesAsync(filePath);
             var memoryImage = new MemoryStream(imageBytes);
 
             //AWS Rekognition Client を作成
@@ -22,13 +23,35 @@ namespace RekognitionSample.Core
                 Image = new Image
                 {
                     Bytes = memoryImage
-                }
+                },
+                Attributes = new List<string> { "ALL" }
             };
             var response = await rekognitionClient.DetectFacesAsync(request);
 
+            var faceList = new List<DetectedFaceDetail>();
+            foreach (var face in response.FaceDetails)
+            {
+                float happiness = 0;
+                foreach (var e in face.Emotions)
+                {
+                    if (e.Type == EmotionName.HAPPY)
+                        happiness = e.Confidence;
+                }
+
+                faceList.Add(new DetectedFaceDetail
+                {
+                    Gender = face.Gender.Value,
+                    GenderConfidence = face.Gender.Confidence,
+                    HappinessConfidence = happiness,
+                    AgeRangeHigh = face.AgeRange.High,
+                    AgeRangeLow = face.AgeRange.Low
+                });
+            }
+
+            return faceList;
         }
 
-        private async Task<byte[]> EncodeAsync(string filePath)
+        private async Task<byte[]> GenerateImageBytesAsync(string filePath)
         {
             byte[] imageBytes;
 
