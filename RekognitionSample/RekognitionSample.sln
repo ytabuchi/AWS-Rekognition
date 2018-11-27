@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.106
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RekognitionSample.Core", "RekognitionSample.Core\RekognitionSample.Core.csproj", "{CC96E514-CB0B-451E-9822-56CAE1AA27FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCoreConsole", "NetCoreConsole\NetCoreConsole.csproj", "{593135D1-ADFE-4BD5-835B-06F26147E635}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{CC96E514-CB0B-451E-9822-56CAE1AA27FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC96E514-CB0B-451E-9822-56CAE1AA27FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC96E514-CB0B-451E-9822-56CAE1AA27FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{593135D1-ADFE-4BD5-835B-06F26147E635}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{593135D1-ADFE-4BD5-835B-06F26147E635}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{593135D1-ADFE-4BD5-835B-06F26147E635}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{593135D1-ADFE-4BD5-835B-06F26147E635}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
