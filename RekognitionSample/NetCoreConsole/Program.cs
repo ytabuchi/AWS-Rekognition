@@ -11,7 +11,7 @@ namespace NetCoreConsole
             Console.WriteLine("Hello World!");
 
             var rekognition = new RekognitionService();
-            var task = rekognition.GetFacesDetailsFromLocalFileAsync(@"D:\family.jpg");
+            var task = rekognition.GetFaceDetailsFromLocalFileAsync(@"D:\family.jpg");
             var res = task.Result;
 
             Debug.WriteLine($"DEBUG: {res.Count} detected.");
