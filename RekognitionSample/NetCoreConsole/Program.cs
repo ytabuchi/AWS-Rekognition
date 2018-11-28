@@ -1,5 +1,6 @@
 ﻿using RekognitionSample.Core;
 using System;
+using System.Diagnostics;
 
 namespace NetCoreConsole
 {
@@ -10,10 +11,10 @@ namespace NetCoreConsole
             Console.WriteLine("Hello World!");
 
             var rekognition = new RekognitionService();
-            var task = rekognition.GetFacesDetailsFromLocalFileAsync(@"D:\family.jpg");
+            var task = rekognition.GetFacesDetailsFromLocalFileAsync(@"D:\test2.jpg");
             var res = task.Result;
 
-            Console.WriteLine($"{res.Count} detected.");
+            Debug.WriteLine($"DEBUG: {res.Count} detected.");
 
             var i = 1;
             foreach (var face in res)
