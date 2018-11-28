@@ -35,20 +35,13 @@ namespace RekognitionSample.Core
                 var response = await rekognitionClient.DetectFacesAsync(request);
 
                 var faceList = new List<DetectedFaceDetail>();
-                float happiness = 0;
                 foreach (var face in response.FaceDetails)
                 {
-                    foreach (var e in face.Emotions)
-                    {
-                        if (e.Type == EmotionName.HAPPY)
-                            happiness = e.Confidence;
-                    }
-
                     faceList.Add(new DetectedFaceDetail
                     {
                         Gender = face.Gender.Value,
                         GenderConfidence = face.Gender.Confidence,
-                        HappinessConfidence = happiness,
+                        HappinessConfidence = face.Emotions.Find(x => x.Type.Value == EmotionName.HAPPY).Confidence,
                         AgeRangeHigh = face.AgeRange.High,
                         AgeRangeLow = face.AgeRange.Low
                     });
