@@ -11,7 +11,7 @@ namespace RekognitionSample.Core
 {
     public class RekognitionService
     {
-        public async Task<List<DetectedFaceDetail>> GetFacesDetailsFromLocalFileAsync(string filePath)
+        public async Task<List<DetectedFaceDetail>> GetFaceDetailsFromLocalFileAsync(string filePath)
         {
             //画像のMemoryStreamを作成
             var imageStream = await GenerateImageStreamFromLocalFileAsync(filePath);
