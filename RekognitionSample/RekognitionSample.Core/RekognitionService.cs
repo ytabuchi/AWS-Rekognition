@@ -13,8 +13,10 @@ namespace RekognitionSample.Core
     {
         public async Task<List<DetectedFaceDetail>> GetFacesDetailsFromLocalFileAsync(string filePath)
         {
-            var imageBytes = await GenerateImageBytesAsync(filePath);
-            var memoryImage = new MemoryStream(imageBytes);
+            //画像のMemoryStreamを作成
+            var imageStream = await GenerateImageStreamFromLocalFileAsync(filePath);
+            if (imageStream == null)
+                return null;
 
             //AWS Rekognition Client を作成
             var rekognitionClient = new AmazonRekognitionClient(Secrets.AccessKey, Secrets.SecretKey, RegionEndpoint.APNortheast1);
@@ -22,46 +24,66 @@ namespace RekognitionSample.Core
             {
                 Image = new Image
                 {
-                    Bytes = memoryImage
+                    Bytes = imageStream
                 },
                 Attributes = new List<string> { "ALL" }
             };
-            var response = await rekognitionClient.DetectFacesAsync(request);
 
-            var faceList = new List<DetectedFaceDetail>();
-            foreach (var face in response.FaceDetails)
+            try
             {
+                //responseを受け取り、必要な情報を抽出
+                var response = await rekognitionClient.DetectFacesAsync(request);
+
+                var faceList = new List<DetectedFaceDetail>();
                 float happiness = 0;
-                foreach (var e in face.Emotions)
+                foreach (var face in response.FaceDetails)
                 {
-                    if (e.Type == EmotionName.HAPPY)
-                        happiness = e.Confidence;
+                    foreach (var e in face.Emotions)
+                    {
+                        if (e.Type == EmotionName.HAPPY)
+                            happiness = e.Confidence;
+                    }
+
+                    faceList.Add(new DetectedFaceDetail
+                    {
+                        Gender = face.Gender.Value,
+                        GenderConfidence = face.Gender.Confidence,
+                        HappinessConfidence = happiness,
+                        AgeRangeHigh = face.AgeRange.High,
+                        AgeRangeLow = face.AgeRange.Low
+                    });
                 }
 
-                faceList.Add(new DetectedFaceDetail
-                {
-                    Gender = face.Gender.Value,
-                    GenderConfidence = face.Gender.Confidence,
-                    HappinessConfidence = happiness,
-                    AgeRangeHigh = face.AgeRange.High,
-                    AgeRangeLow = face.AgeRange.Low
-                });
+                return faceList;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
             }
 
-            return faceList;
+            return null;
         }
 
-        private async Task<byte[]> GenerateImageBytesAsync(string filePath)
+        private async Task<MemoryStream> GenerateImageStreamFromLocalFileAsync(string filePath)
         {
-            byte[] imageBytes;
-
-            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            try
             {
-                imageBytes = new byte[stream.Length];
-                await stream.ReadAsync(imageBytes, 0, (int)stream.Length);
+                using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await fileStream.CopyToAsync(memoryStream);
+
+                        return memoryStream;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
             }
 
-            return imageBytes;
+            return null;
         }
     }
 }
