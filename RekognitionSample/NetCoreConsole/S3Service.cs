@@ -17,7 +17,6 @@ namespace NetCoreConsole
     public class S3Service
     {
         private const string userName = "ytabuchi";
-        private const string bucketName = "ytabuchi-rekognition-from-api";
         // Example creates two objects (for simplicity, we upload same file twice).
         // You specify key names for these objects.
         private const string keyName1 = "sample";
@@ -25,19 +24,16 @@ namespace NetCoreConsole
         private const string filePath = @"D:\drive.jpg";
         private static readonly RegionEndpoint bucketRegion = RegionEndpoint.APNortheast1;
 
-        private const string accessKey = "AKIAJEHKKDSAWHBGZVPQ";
-        private const string secretKey = "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";
-
         public async Task WritingAnObjectAsync()
         {
             try
             {
-                using (var client = new AmazonS3Client(accessKey, secretKey, bucketRegion))
+                using (var client = new AmazonS3Client(Secrets.AccessKey, Secrets.SecretKey, Secrets.Region))
                 {
                     // 1. Put object-specify only key name for the new object.
                     var putRequest1 = new PutObjectRequest
                     {
-                        BucketName = bucketName,
+                        BucketName = Secrets.BucketName,
                         Key = userName + "/" + keyName1,
                         FilePath = filePath,
                     };
@@ -76,11 +72,11 @@ namespace NetCoreConsole
 
         public async Task GetXxxInfoAsync()
         {
-            using (var client = new AmazonS3Client(accessKey, secretKey, bucketRegion))
+            using (var client = new AmazonS3Client(Secrets.AccessKey, Secrets.SecretKey, Secrets.Region))
             {
                 var request = new ListObjectsRequest
                 {
-                    BucketName = bucketName,
+                    BucketName = Secrets.BucketName,
                     Prefix = userName
                 };
                 var res = await client.ListObjectsAsync(request);
@@ -96,12 +92,12 @@ namespace NetCoreConsole
         {
             try
             {
-                using(var client = new AmazonS3Client(accessKey, secretKey, bucketRegion))
+                using(var client = new AmazonS3Client(Secrets.AccessKey, Secrets.SecretKey, Secrets.Region))
                 {
                     var tokenSource = new CancellationTokenSource();
                     var cancelToken = tokenSource.Token;
 
-                    using (var res = await client.GetObjectAsync(bucketName, keyName1))
+                    using (var res = await client.GetObjectAsync(Secrets.BucketName, keyName1))
                     {
                         await res.WriteResponseStreamToFileAsync(@"D:\res.jpg", false, cancelToken);
                     }
@@ -125,7 +121,7 @@ namespace NetCoreConsole
         {
             try
             {
-                using(var client = new AmazonRekognitionClient(accessKey, secretKey, RegionEndpoint.APNortheast1))
+                using(var client = new AmazonRekognitionClient(Secrets.AccessKey, Secrets.SecretKey, Secrets.Region))
                 {
                     var request = new DetectFacesRequest
                     {
@@ -133,7 +129,7 @@ namespace NetCoreConsole
                         {
                             S3Object = new Amazon.Rekognition.Model.S3Object
                             {
-                                Bucket = bucketName,
+                                Bucket = Secrets.BucketName,
                                 Name = keyName1
                             }
                         },
