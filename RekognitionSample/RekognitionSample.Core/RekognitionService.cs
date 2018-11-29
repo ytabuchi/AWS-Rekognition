@@ -18,36 +18,40 @@ namespace RekognitionSample.Core
             if (imageStream == null)
                 return null;
 
-            //AWS Rekognition Client を作成
-            var rekognitionClient = new AmazonRekognitionClient(Secrets.AccessKey, Secrets.SecretKey, RegionEndpoint.APNortheast1);
-            var request = new DetectFacesRequest
-            {
-                Image = new Image
-                {
-                    Bytes = imageStream
-                },
-                Attributes = new List<string> { "ALL" }
-            };
-
             try
             {
-                //responseを受け取り、必要な情報を抽出
-                var response = await rekognitionClient.DetectFacesAsync(request);
-
-                var faceList = new List<DetectedFaceDetail>();
-                foreach (var face in response.FaceDetails)
+                //AWS Rekognition Client を作成
+                using (var rekognitionClient = new AmazonRekognitionClient(Secrets.AccessKey, 
+                                                                           Secrets.SecretKey, 
+                                                                           RegionEndpoint.APNortheast1))
                 {
-                    faceList.Add(new DetectedFaceDetail
+                    var request = new DetectFacesRequest
                     {
-                        Gender = face.Gender.Value,
-                        GenderConfidence = face.Gender.Confidence,
-                        HappinessConfidence = face.Emotions.Find(x => x.Type.Value == EmotionName.HAPPY).Confidence,
-                        AgeRangeHigh = face.AgeRange.High,
-                        AgeRangeLow = face.AgeRange.Low
-                    });
-                }
+                        Image = new Image
+                        {
+                            Bytes = imageStream
+                        },
+                        Attributes = new List<string> { "ALL" }
+                    };
 
-                return faceList;
+                    //responseを受け取り、必要な情報を抽出
+                    var response = await rekognitionClient.DetectFacesAsync(request);
+
+                    var faceList = new List<DetectedFaceDetail>();
+                    foreach (var face in response.FaceDetails)
+                    {
+                        faceList.Add(new DetectedFaceDetail
+                        {
+                            Gender = face.Gender.Value,
+                            GenderConfidence = face.Gender.Confidence,
+                            HappinessConfidence = face.Emotions.Find(x => x.Type.Value == EmotionName.HAPPY).Confidence,
+                            AgeRangeHigh = face.AgeRange.High,
+                            AgeRangeLow = face.AgeRange.Low
+                        });
+                    }
+
+                    return faceList;
+                }
             }
             catch (Exception e)
             {
