@@ -23,7 +23,7 @@ namespace RekognitionSample.Core
                 //AWS Rekognition Client を作成
                 using (var rekognitionClient = new AmazonRekognitionClient(Secrets.AccessKey, 
                                                                            Secrets.SecretKey, 
-                                                                           RegionEndpoint.APNortheast1))
+                                                                           Secrets.Region))
                 {
                     var request = new DetectFacesRequest
                     {
@@ -60,6 +60,8 @@ namespace RekognitionSample.Core
 
             return null;
         }
+
+
 
         private async Task<MemoryStream> GenerateImageStreamFromLocalFileAsync(string filePath)
         {
